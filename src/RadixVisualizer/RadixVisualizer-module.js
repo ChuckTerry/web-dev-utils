@@ -16,7 +16,7 @@ export class RadixVisualizer {
     uppercase: true
   };
   static headerBorderLookup = (new Array(50).fill('')).map((_, index) => '_'.repeat(index));
-  static headerLookup = new Array(4).fill(new Map());
+  static headerLookup = [new Map(), new Map(), new Map(), new Map()];
   static numberMemo = new Map();
 
   /** 
@@ -92,7 +92,7 @@ export class RadixVisualizer {
    * @returns {[string[], number[]]} An array containing the array of radix strings and the array of column lengths.
    */
   #generateBaseArray(numberArray) {
-    const cellLength = new Array(4).fill(10);
+    const cellLength = [6, 5, 7, 3];
     const baseArray = [];
     const numberCount = numberArray.length;
     for (let index = 0; index < numberCount; index++) {
@@ -116,6 +116,7 @@ export class RadixVisualizer {
       }
       baseArray.push(array);
     }
+    console.log(baseArray, cellLength)
     return [baseArray, cellLength];
   }
 
@@ -125,24 +126,34 @@ export class RadixVisualizer {
    * @returns {string[]} An array containing the header strings and the header border string.
    */
   #generateLogHeaders(cellLength) {
+    console.log(cellLength)
     const headerBorderArray = [];
     const headerStrings = ['Binary', 'Octal', 'Decimal', 'Hex'];
     for (let index = 0; index < 4; index++) {
+      console.log(index);
       const baseCellLength = cellLength[index];
+      console.log(baseCellLength);
       if (headerBorderArray.length > 49) {
         headerBorderArray.push('-'.repeat(baseCellLength));
       } else {
         headerBorderArray.push(RadixVisualizer.headerBorderLookup[baseCellLength]);
       }
-      if (RadixVisualizer.headerLookup[index].has(baseCellLength) === false) {
+      const headerLookup = RadixVisualizer.headerLookup[index];
+      console.dir(headerLookup);
+      if (headerLookup.has(baseCellLength) === false) {
         const string = headerStrings[index];
+        console.log(string);
         const whitespace = baseCellLength - string.length;
         const prefixLength = Math.ceil(whitespace / 2);
         const suffixLength = Math.floor(whitespace / 2);
         const fullString = [' '.repeat(prefixLength), ' '.repeat(suffixLength)].join(string);
-        RadixVisualizer.headerLookup[index].set(baseCellLength, fullString);
+
+        console.log(fullString);
+        headerLookup.set(baseCellLength, fullString);
+        console.log(headerLookup)
       }
-      headerStrings[index] = RadixVisualizer.headerLookup[index].get(baseCellLength);
+      console.log(headerLookup)
+      headerStrings[index] = headerLookup.get(baseCellLength);
     }
     return [headerStrings.join('|'), headerBorderArray.join('|')];
   }
